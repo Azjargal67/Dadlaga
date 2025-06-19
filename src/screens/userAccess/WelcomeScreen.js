@@ -3,7 +3,6 @@ import React, { useRef, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { welcomeStyles } from "../../styles/welcomeStyles";
-import { colors } from "../../styles/colors";
 
 export default function WelcomeScreen() {
   const navigation = useNavigation();

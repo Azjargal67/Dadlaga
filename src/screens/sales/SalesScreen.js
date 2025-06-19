@@ -15,8 +15,16 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
-import { addItem, removeItem, updateQuantity } from "../../redux/cartSlice";
+import {
+  addItem,
+  removeItem,
+  updateQuantity,
+  clearCart,
+} from "../../redux/cartSlice";
 import styles from "../../styles/SalesScreenStyle";
+import { db } from "../../../firebaseConfig";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { getAuth } from "firebase/auth"; // 👈 нэмэгдсэн
 
 export default function SalesScreen() {
   const navigation = useNavigation();
@@ -28,41 +36,43 @@ export default function SalesScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const getPriceByProductName = (productName) => {
-    // uniin medeelel baihgui bol 0 iig butsaana
-    const priceMap = {
-      Бараа1: 1500,
-      Бараа2: 2000,
-      Бараа3: 1000,
-    };
-    return priceMap[productName] ?? 1000;
-  };
-
-  const handleAddToCart = () => {
-    if (!searchQuery.trim() || !quantity.trim()) {
-      Alert.alert("Анхаар", "Бүх талбарыг бөглөнө үү");
+  const handleBarcodeSearch = async () => {
+    if (!searchQuery.trim()) {
+      Alert.alert("Barcode оруулна уу");
       return;
     }
 
-    const parsedQuantity = parseInt(quantity);
-    if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
-      Alert.alert("Анхаар", "Барааны тоог зөв оруулна уу");
-      return;
+    try {
+      const q = query(
+        collection(db, "products"),
+        where("barcode", "==", searchQuery.trim())
+      );
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        Alert.alert("Ийм barcode-тэй бараа байхгүй байна");
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        const d = doc.data();
+        const newItem = {
+          id: doc.id,
+          name: d.name,
+          quantity: 1,
+          price: d.price ?? 1000,
+          total: d.price ?? 1000,
+          imageBase64: d.imageBase64 ?? null,
+        };
+        dispatch(addItem(newItem));
+      });
+
+      setSearchQuery("");
+      Alert.alert("Амжилттай", "Бараа сагсанд нэмэгдлээ");
+    } catch (e) {
+      console.error("Barcode хайх үед алдаа:", e);
+      Alert.alert("Алдаа", "Хайлтын үед алдаа гарлаа");
     }
-
-    const price = getPriceByProductName(searchQuery);
-    const newItem = {
-      id: Date.now().toString(),
-      name: searchQuery,
-      quantity: parsedQuantity,
-      price: price,
-      total: price * parsedQuantity,
-      imageBase64: null,
-    };
-
-    dispatch(addItem(newItem));
-    setSearchQuery("");
-    setQuantity("");
   };
 
   const increaseQuantity = (id) => {
@@ -87,14 +97,9 @@ export default function SalesScreen() {
   };
 
   const updateQuantityFromModal = () => {
-    if (!quantity.trim()) {
-      Alert.alert("Анхаар", "Тоо ширхэг оруулна уу");
-      return;
-    }
-
     const parsedQuantity = parseInt(quantity);
     if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
-      Alert.alert("Анхаар", "Тоо ширхэг зөв оруулна уу");
+      Alert.alert("Анхаар", "Барааны тоог зөв оруулна уу");
       return;
     }
 
@@ -102,6 +107,53 @@ export default function SalesScreen() {
     setModalVisible(false);
     setSearchQuery("");
     setQuantity("");
+  };
+
+  const handleCheckout = async () => {
+    if (cart.length === 0) {
+      Alert.alert("Анхаар", "Сагс хоосон байна");
+      return;
+    }
+
+    // ⬇️ Хэрэглэгчийн ID-г авах
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (!user) {
+      Alert.alert("Алдаа", "Нэвтэрсэн хэрэглэгч байхгүй байна");
+      return;
+    }
+
+    const saleId = Date.now().toString();
+    const dateObj = new Date();
+    const formattedDate = dateObj
+      .toISOString()
+      .split("T")[0]
+      .replace(/-/g, ".");
+    const totalAmount = cart.reduce((sum, item) => sum + (item.total ?? 0), 0);
+
+    const billData = {
+      saleId,
+      date: formattedDate,
+      totalAmount,
+      userId: user.uid, // ✅ хэрэглэгчийн ID-г оруулсан
+      items: cart.map((item) => ({
+        id: item.id,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        total: item.total,
+        time: new Date().toLocaleTimeString("en-GB"),
+      })),
+    };
+
+    try {
+      await addDoc(collection(db, "bills"), billData);
+      Alert.alert("Амжилттай", "Баримт хадгалагдлаа");
+      dispatch(clearCart());
+    } catch (error) {
+      console.error("Баримт хадгалахад алдаа:", error);
+      Alert.alert("Алдаа", "Баримт хадгалахад алдаа гарлаа");
+    }
   };
 
   const renderItem = ({ item }) => (
@@ -130,30 +182,21 @@ export default function SalesScreen() {
         </View>
         <View style={styles.quantityContainer}>
           <TouchableOpacity
-            onPress={(e) => {
-              e.stopPropagation();
-              decreaseQuantity(item.id);
-            }}
+            onPress={() => decreaseQuantity(item.id)}
             style={styles.quantityButton}
           >
             <Icon name="minus" size={20} color="#6A1B9A" />
           </TouchableOpacity>
           <Text style={styles.quantity}>{item.quantity}</Text>
           <TouchableOpacity
-            onPress={(e) => {
-              e.stopPropagation();
-              increaseQuantity(item.id);
-            }}
+            onPress={() => increaseQuantity(item.id)}
             style={styles.quantityButton}
           >
             <Icon name="plus" size={20} color="#6A1B9A" />
           </TouchableOpacity>
         </View>
         <TouchableOpacity
-          onPress={(e) => {
-            e.stopPropagation();
-            dispatch(removeItem(item.id));
-          }}
+          onPress={() => dispatch(removeItem(item.id))}
           style={styles.removeButton}
         >
           <Icon name="close" size={20} color="#6A1B9A" />
@@ -172,18 +215,17 @@ export default function SalesScreen() {
           <View style={styles.searchInputContainer}>
             <TextInput
               style={styles.searchInput}
-              placeholder="Бараа хайх / barcode уншуулах"
+              placeholder="Барааны баркод оруулаад Enter товч дарна уу"
               value={searchQuery}
               onChangeText={setSearchQuery}
-              onSubmitEditing={handleAddToCart}
-              returnKeyType="done"
+              onSubmitEditing={handleBarcodeSearch}
+              returnKeyType="search"
             />
-
             <TouchableOpacity
               style={styles.barcodeButton}
-              onPress={() => Alert.alert("Barcode scanner идэвхжлээ")}
+              onPress={() => Alert.alert("odoohondoo hiigeegui baigaa")}
             >
-              <Icon name="barcode-scan" size={24} color="#6A1B9A" />
+              <Icon name="barcode-scan" size={24} color="#2C3E50" />
             </TouchableOpacity>
           </View>
 
@@ -196,7 +238,7 @@ export default function SalesScreen() {
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.actionButton, styles.payButton]}
-              onPress={() => Alert.alert("Баримт хадгалагдлаа")}
+              onPress={handleCheckout}
             >
               <Text style={styles.actionButtonText}>Төлөх</Text>
             </TouchableOpacity>
@@ -235,7 +277,7 @@ export default function SalesScreen() {
       <Modal visible={modalVisible} transparent animationType="fade">
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Тоо ширхэг өөрчлөх</Text>
+            <Text style={styles.modalTitle}>Барааны тоог өөрчлөх</Text>
             <TextInput
               style={styles.quantityInput}
               keyboardType="numeric"

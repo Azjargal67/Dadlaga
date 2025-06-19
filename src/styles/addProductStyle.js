@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
     },
     imageInput: {
       borderWidth: 1,
-      borderColor: colors.lightGray,
+      borderColor: "#ccc",
       borderRadius: 8,
       height: 300,
       justifyContent: "center",
@@ -47,7 +47,7 @@ export const styles = StyleSheet.create({
     },
     input: {
       borderWidth: 1,
-      borderColor: colors.lightGray,
+      borderColor: "#ccc",
       borderRadius: 8,
       padding: 12,
       fontSize: 16,
@@ -65,7 +65,7 @@ export const styles = StyleSheet.create({
     },
     input: {
       borderWidth: 1,
-      borderColor: colors.lightGray,
+      borderColor: "#ccc",
       borderRadius: 8,
       padding: 12,
       marginBottom: 16,
@@ -77,7 +77,7 @@ export const styles = StyleSheet.create({
     },
     placeholderCategoryText: {
       fontSize: 16,
-      color: colors.gray,
+      color: "#ccc",
     },
   },
 
@@ -103,10 +103,11 @@ export const styles = StyleSheet.create({
   categoryModal: {
     modalOverlay: {
       flex: 1,
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      backgroundColor: "rgba(0, 0, 0, 0.)",
     },
     modalContainer: {
       justifyContent: "flex-end",
+      borderColor: colors.primary,
     },
     modalContent: {
       backgroundColor: colors.white,
@@ -118,7 +119,7 @@ export const styles = StyleSheet.create({
     modalTitle: {
       fontSize: 18,
       fontWeight: "700",
-      color: colors.black,
+      color: colors.primary,
       marginBottom: 16,
     },
     categoryItem: {
@@ -128,7 +129,7 @@ export const styles = StyleSheet.create({
     },
     categoryItemText: {
       fontSize: 16,
-      color: colors.black,
+      color: colors.primary,
     },
     noCategoriesText: {
       fontSize: 14,
@@ -144,8 +145,8 @@ export const styles = StyleSheet.create({
     newCategoryInput: {
       flex: 1,
       borderWidth: 1,
-      borderColor: colors.gray,
-      borderRadius: 8,
+      borderColor: "#ccc",
+      borderRadius: 15,
       padding: 12,
       fontSize: 16,
       marginRight: 8,

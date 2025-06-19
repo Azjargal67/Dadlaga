@@ -1,4 +1,3 @@
-// styles/common.js
 import { StyleSheet } from "react-native";
 import colors from "./colors";
 

@@ -1,4 +1,5 @@
 import React from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -17,6 +18,7 @@ import ProfileScreen from "../screens/profile/ProfileScreen";
 import CategoryScreen from "../screens/productList/CategoryScreen";
 import { colors } from "../styles/colors";
 import CartProductList from "../screens/sales/CartProductList";
+import BillDetailScreen from "../screens/bill/BillDetailScreen";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -81,14 +83,15 @@ function BottomTabNavigator() {
             );
           }
         },
-        tabBarActiveTintColor: colors.purple500 || "#4A2C2A",
+        tabBarActiveTintColor: colors.purple500 || "#2C3E50",
         tabBarInactiveTintColor: colors.purple300 || "gray",
         headerShown: false,
         tabBarStyle: {
           backgroundColor: colors.white || "#fff",
           borderTopWidth: 1,
           borderTopColor: colors.purple100 || "#e0e0e0",
-          height: 60,
+          paddingBottom: 10,
+          height: 80,
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -126,44 +129,51 @@ function BottomTabNavigator() {
 
 export default function AppNavigation() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome">
-        <Stack.Screen
-          name="Welcome"
-          component={WelcomeScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="SignUp"
-          component={SignUpScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Main"
-          component={BottomTabNavigator}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="ProductAddScreen"
-          component={ProductAddScreen}
-          options={{ headerShown: false, title: "Бараа Нэмэх" }}
-        />
-        <Stack.Screen
-          name="ProductDetail"
-          component={ProductDetailScreen}
-          options={{ headerShown: false, title: "Барааны дэлгэрэнгүй" }}
-        />
-        <Stack.Screen
-          name="CartProductList"
-          component={CartProductList}
-          options={{ headerShown: false, title: "Сагс дахь бараа" }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Welcome">
+          <Stack.Screen
+            name="Welcome"
+            component={WelcomeScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SignUp"
+            component={SignUpScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Main"
+            component={BottomTabNavigator}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ProductAddScreen"
+            component={ProductAddScreen}
+            options={{ headerShown: false, title: "Бараа Нэмэх" }}
+          />
+          <Stack.Screen
+            name="ProductDetail"
+            component={ProductDetailScreen}
+            options={{ headerShown: false, title: "Барааны дэлгэрэнгүй" }}
+          />
+          <Stack.Screen
+            name="CartProductList"
+            component={CartProductList}
+            options={{ headerShown: false, title: "Сагсан дахь бараа" }}
+          />
+          <Stack.Screen
+            name="BillDetail"
+            component={BillDetailScreen}
+            options={{ headerShown: false, title: "Баримтын дэлгэрэнгүй" }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }

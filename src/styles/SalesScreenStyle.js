@@ -1,9 +1,10 @@
 import { StyleSheet } from "react-native";
+import { colors } from "./colors";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colors.lightGray,
     paddingHorizontal: 16,
     paddingTop: 10,
   },
@@ -18,7 +19,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 8,
+    borderRadius: 15,
     paddingHorizontal: 8,
     marginBottom: 8,
   },
@@ -35,9 +36,9 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-    backgroundColor: "#6A1B9A",
+    backgroundColor: colors.primary,
     padding: 10,
-    borderRadius: 8,
+    borderRadius: 15,
     marginHorizontal: 4,
   },
   actionButtonText: {
@@ -46,7 +47,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   payButton: {
-    backgroundColor: "#2E7D32",
+    borderRadius: 15,
+    backgroundColor: "#2E7D42",
   },
   emptyCartContainer: {
     alignItems: "center",
@@ -68,7 +70,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#F3E5F5",
-    borderRadius: 8,
+    borderRadius: 15,
     marginVertical: 4,
     padding: 8,
   },

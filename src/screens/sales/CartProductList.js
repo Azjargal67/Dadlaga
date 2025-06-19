@@ -18,6 +18,7 @@ import { collection, onSnapshot } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import { colors } from "../../styles/colors";
 import { addItem } from "../../redux/cartSlice";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CartProductList() {
   const dispatch = useDispatch();
@@ -134,38 +135,46 @@ export default function CartProductList() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Барааны Жагсаалт</Text>
-        <View style={styles.searchContainer}>
-          <Ionicons name="search-outline" size={20} color={colors.lightText} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Хайх..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
+      <SafeAreaView>
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerTitle}>Барааны Жагсаалт</Text>
+          <View style={styles.searchContainer}>
+            <Ionicons
+              name="search-outline"
+              size={20}
+              color={colors.lightText}
+            />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Хайх..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
         </View>
-      </View>
 
-      {filteredProducts.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Ionicons
-            name="cube-outline"
-            size={80}
-            color={colors.lightText}
-            style={styles.emptyImage}
+        {filteredProducts.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Ionicons
+              name="cube-outline"
+              size={80}
+              color={colors.lightText}
+              style={styles.emptyImage}
+            />
+            <Text style={styles.emptyText}>Бараа олдсонгүй</Text>
+            <Text style={styles.emptySubText}>
+              Хайлтын үгээ өөрчилж үзнэ үү
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredProducts}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+            contentContainerStyle={styles.flatListContent}
           />
-          <Text style={styles.emptyText}>Бараа олдсонгүй</Text>
-          <Text style={styles.emptySubText}>Хайлтын үгээ өөрчилж үзнэ үү</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={filteredProducts}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          contentContainerStyle={styles.flatListContent}
-        />
-      )}
+        )}
+      </SafeAreaView>
     </View>
   );
 }
@@ -189,7 +198,6 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 22,
-    fontWeight: "bold",
     color: colors.primary,
     marginBottom: 12,
     textAlign: "center",
@@ -198,12 +206,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: colors.lightGray,
-    borderRadius: 8,
+    borderRadius: 15,
     paddingHorizontal: 12,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
   searchInput: {
-    flex: 1,
     paddingVertical: 10,
     paddingHorizontal: 8,
     fontSize: 16,

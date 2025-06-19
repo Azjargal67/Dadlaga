@@ -83,17 +83,12 @@ export default StyleSheet.create({
     position: "absolute",
     bottom: 20,
     right: 20,
-    backgroundColor: colors.purple500,
+    backgroundColor: colors.primary,
     borderRadius: 30,
     width: 60,
     height: 60,
     alignItems: "center",
     justifyContent: "center",
-    elevation: 5,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
   },
   modalOverlay: {
     flex: 1,
@@ -107,8 +102,6 @@ export default StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 12,
     padding: 20,
-    // Хаагдахыг зөвшөөрөхийн тулд touch event-ийг зогсооно
-    // modalContent доторх элементүүдэд touch event зөв ажиллах болно
   },
   modalTitle: {
     fontSize: 18,
@@ -129,13 +122,13 @@ export default StyleSheet.create({
   modalActions: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    gap: 12, // Товчлууруудын хоорондын зай
+    gap: 12,
   },
   modalButton: {
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
-    minWidth: 100, // Товчны хэмжээг тодорхой болгох
+    minWidth: 100,
     alignItems: "center",
     justifyContent: "center",
   },

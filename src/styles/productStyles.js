@@ -4,11 +4,11 @@ import { colors } from "./colors";
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.lightGray,
   },
   overlay: {
     flex: 1,
-    backgroundColor: colors.overlay,
+    backgroundColor: colors.lightGray,
     paddingTop: 20,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   productCard: {
     flexDirection: "row",
-    backgroundColor: colors.surface,
+    backgroundColor: colors.lightGray,
     borderRadius: 15,
     marginVertical: 8,
     marginHorizontal: 12,
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 10,
     marginRight: 15,
-    backgroundColor: colors.lightText,
+    backgroundColor: colors.lightGray,
   },
   noImage: {
     width: 100,
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   productName: {
     fontSize: 16,
     fontWeight: "700",
-    color: colors.text,
+    color: colors.primary,
     marginBottom: 5,
   },
   productPrice: {
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   },
   productBarcode: {
     fontSize: 14,
-    color: colors.lightText,
+    color: colors.lightGray,
     marginBottom: 3,
   },
   productCategory: {
@@ -106,11 +106,7 @@ const styles = StyleSheet.create({
     color: colors.accent,
     fontStyle: "italic",
   },
-  cartButton: {
-    padding: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+
   deleteButton: {
     backgroundColor: colors.danger,
     justifyContent: "center",
@@ -123,47 +119,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 20,
     right: 20,
-    backgroundColor: colors.purple500,
+    backgroundColor: colors.primary,
     borderRadius: 30,
     width: 60,
     height: 60,
     alignItems: "center",
     justifyContent: "center",
-    elevation: 5,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-  bottomNav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: colors.white,
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: "#eee",
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  navItem: {
-    alignItems: "center",
-    padding: 8,
-  },
-  activeNavItem: {
-    borderBottomWidth: 2,
-    borderBottomColor: colors.primary,
-  },
-  navText: {
-    fontSize: 12,
-    color: colors.lightText,
-    marginTop: 4,
-  },
-  activeNavText: {
-    color: colors.primary,
-    fontWeight: "700",
   },
 });
 

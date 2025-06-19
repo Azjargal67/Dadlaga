@@ -17,6 +17,7 @@ import {
   addDoc,
   deleteDoc,
   doc,
+  writeBatch,
 } from "firebase/firestore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styles from "../../styles/categoryStyle";
@@ -32,7 +33,7 @@ const CategoryItem = React.memo(({ item, onPress, onDelete, productCount }) => (
       <View style={styles.productInfo}>
         <Text style={styles.productName}>{item.name}</Text>
         <Text style={styles.productBarcode}>
-          {productCount(item.name)} бүтээгдэхүүн
+          Энэ ангилалд {productCount(item.name)} бараа байна.
         </Text>
       </View>
       <Ionicons name="chevron-forward" size={20} color={colors.lightText} />
@@ -64,7 +65,7 @@ const AddCategoryModal = ({
     <TouchableOpacity
       style={styles.modalOverlay}
       activeOpacity={1}
-      onPress={onClose} // Modal-ын гадна дарвал хаагдана
+      onPress={onClose}
     >
       <View style={styles.modalContent}>
         <Text style={styles.modalTitle}>Шинэ ангилал нэмэх</Text>
@@ -149,7 +150,7 @@ export default function CategoryScreen({ navigation }) {
       },
       (error) => {
         console.error("Error fetching products:", error);
-        Alert.alert("Алдаа", "Бүтээгдэхүүний мэдээлэл татахад алдаа гарлаа.");
+        Alert.alert("Алдаа", "Барааны мэдээлэл татахад алдаа гарлаа.");
       }
     );
 
@@ -212,17 +213,11 @@ export default function CategoryScreen({ navigation }) {
         (p) => p.category === categoryName
       );
 
-      if (productsInCategory.length > 0) {
-        Alert.alert(
-          "Ангилал устгах боломжгүй",
-          `Энэ ангилалд ${productsInCategory.length} ширхэг бүтээгдэхүүн байна. Эхлээд бүтээгдэхүүнүүдийг устгах эсвэл өөр ангилалд шилжүүлнэ үү.`
-        );
-        return;
-      }
-
       Alert.alert(
         "Ангилал устгах",
-        "Энэ ангилалыг устгахдаа итгэлтэй байна уу?",
+        productsInCategory.length > 0
+          ? `Энэ ангилалд ${productsInCategory.length} ширхэг бараа байна. Ангилал болон бүх барааг  хамт устгах уу?`
+          : "Энэ ангилалыг устгахдаа итгэлтэй байна уу?",
         [
           { text: "Цуцлах", style: "cancel" },
           {
@@ -230,13 +225,27 @@ export default function CategoryScreen({ navigation }) {
             style: "destructive",
             onPress: async () => {
               try {
-                await deleteDoc(doc(db, "categories", categoryId));
-                Alert.alert("Амжилттай", "Ангилал амжилттай устлаа!");
+                const batch = writeBatch(db);
+
+                const categoryRef = doc(db, "categories", categoryId);
+                batch.delete(categoryRef);
+
+                productsInCategory.forEach((product) => {
+                  const productRef = doc(db, "products", product.id);
+                  batch.delete(productRef);
+                });
+
+                await batch.commit();
+
+                Alert.alert(
+                  "Амжилттай",
+                  "Ангилал болон холбоотой бараанууд амжилттай устлаа!"
+                );
               } catch (error) {
-                console.error("Error deleting category:", error);
+                console.error("Error deleting category and products:", error);
                 Alert.alert(
                   "Алдаа",
-                  `Ангилал устгахад алдаа гарлаа: ${error.message}`
+                  `Ангилал эсвэл бараа устгахад алдаа гарлаа: ${error.message}`
                 );
               }
             },
@@ -289,9 +298,8 @@ export default function CategoryScreen({ navigation }) {
         <TouchableOpacity
           style={styles.floatingButton}
           onPress={() => setModalVisible(true)}
-          activeOpacity={0.8}
         >
-          <Ionicons name="add" size={28} color={colors.white} />
+          <Ionicons name="add-circle" size={50} color={colors.white} />
         </TouchableOpacity>
       </View>
       <AddCategoryModal
